@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trắc Nghiệm GDQP&AN Lớp 10 - Trường THPT Tân An</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter & Merriweather -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        military: {
+                            50: '#f2f7f4',
+                            100: '#e1ede5',
+                            600: '#1b4d3e',
+                            700: '#153e32',
+                            800: '#0f2f26',
+                            900: '#0a201a',
+                        },
+                        flagred: '#da251d',
+                        goldstar: '#ff0',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .star-shadow {
+            text-shadow: 0 0 10px rgba(255, 255, 0, 0.6);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #1b4d3e;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="bg-slate-100 font-sans text-slate-800 min-h-screen flex flex-col justify-between selection:bg-military-600 selection:text-white">
+
+    <!-- Header Section -->
+    <header class="bg-gradient-to-r from-military-900 via-military-800 to-military-700 text-white shadow-lg border-b-4 border-yellow-500 sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex flex-col md:flex-row items-center justify-between gap-3">
+            <div class="flex items-center space-x-3">
+                <div class="w-12 h-12 rounded-full bg-flagred border-2 border-yellow-400 flex items-center justify-center shadow-md shrink-0">
+                    <i class="fa-solid font-bold text-yellow-300 text-2xl">★</i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg md:text-xl text-yellow-400 tracking-wide uppercase">ÔN TẬP GDQP & AN - LỚP 10</h1>
+                    <p class="text-xs text-emerald-200 font-medium">SỞ GD&ĐT TÂY NINH - TRƯỜNG THPT TÂN AN (NĂM HỌC 2026-2027)</p>
+                </div>
+            </div>
+            
+            <!-- Quick Stats Badge -->
+            <div class="flex items-center space-x-2 bg-military-900/60 px-4 py-2 rounded-lg border border-emerald-600/40 text-xs">
+                <i class="fa-solid fa-[#ffd700] fa-shield-halved text-yellow-400 text-base"></i>
+                <div>
+                    <span class="block text-slate-300">Tổng số câu:</span>
+                    <span class="font-bold text-yellow-300" id="totalQuestionsCount">54 Câu hỏi (3 Bài)</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Layout -->
+    <main class="max-w-6xl mx-auto px-4 py-6 w-full flex-grow">
+
+        <!-- Navigation Tabs -->
+        <nav class="flex flex-wrap gap-2 mb-6 border-b border-slate-300 pb-3" justify-center md:justify-start>
+            <button onclick="switchTab(1)" id="tab-btn-1" class="tab-btn px-4 py-2.5 rounded-lg font-semibold text-sm transition-all duration-200 flex items-center space-x-2 bg-military-700 text-white shadow-md">
+                <i class="fa-solid fa-person-military-rifle"></i>
+                <span>Bài 1: Lực Lượng Vũ Trang</span>
+            </button>
+            <button onclick="switchTab(2)" id="tab-btn-2" class="tab-btn px-4 py-2.5 rounded-lg font-semibold text-sm transition-all duration-200 flex items-center space-x-2 bg-white text-slate-700 hover:bg-slate-200 border border-slate-300">
+                <i class="fa-solid fa-scale-balanced"></i>
+                <span>Bài 2: Điều Lệnh & Pháp Luật</span>
+            </button>
+            <button onclick="switchTab(3)" id="tab-btn-3" class="tab-btn px-4 py-2.5 rounded-lg font-semibold text-sm transition-all duration-200 flex items-center space-x-2 bg-white text-slate-700 hover:bg-slate-200 border border-slate-300">
+                <i class="fa-solid fa-capsules"></i>
+                <span>Bài 3: Phòng Chống Ma Túy</span>
+            </button>
+        </nav>
+
+        <!-- Quiz Status Banner & Scoreboard -->
+        <div id="scoreBanner" class="hidden mb-6 bg-white border-l-4 border-military-600 p-4 rounded-r-xl shadow-md transition-all">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="flex items-center space-x-4">
+                    <div id="scoreCircle" class="w-16 h-16 rounded-full bg-military-700 text-yellow-300 flex items-center justify-center font-bold text-xl border-2 border-yellow-400 shadow-inner">
+                        0/10
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-slate-800 text-lg" id="scoreTitle">Kết quả bài làm</h3>
+                        <p class="text-sm text-slate-600" id="scoreDetail">Bạn đã trả lời đúng 0/18 câu hỏi.</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <button onclick="resetQuiz()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 text-sm font-semibold rounded-lg transition duration-200 flex items-center space-x-2">
+                        <i class="fa-solid fa-rotate-right"></i>
+                        <span>Làm lại bài</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Question Containers -->
+        <div id="quiz-container" class="space-y-6">
+            <!-- Questions will be rendered dynamically -->
+        </div>
+
+        <!-- Sticky Bottom Control Panel -->
+        <div class="sticky bottom-4 mt-8 bg-white/90 backdrop-blur-md p-4 rounded-xl shadow-xl border border-slate-200 flex items-center justify-between">
+            <div class="text-xs md:text-sm text-slate-600 font-medium">
+                Đã trả lời: <span id="answeredCount" class="font-bold text-military-700">0</span>/<span id="lessonTotalCount">18</span> câu
+            </div>
+            <div class="flex space-x-3">
+                <button onclick="resetQuiz()" class="px-4 py-2.5 text-slate-600 hover:bg-slate-100 rounded-lg text-sm font-semibold transition border border-slate-300">
+                    <i class="fa-solid fa-arrows-rotate mr-1"></i> Xóa chọn
+                </button>
+                <button onclick="submitQuiz()" id="submitBtn" class="px-6 py-2.5 bg-military-700 hover:bg-military-800 text-yellow-300 font-bold text-sm rounded-lg shadow-md transition flex items-center space-x-2 border border-yellow-500">
+                    <i class="fa-solid fa-paper-plane"></i>
+                    <span>NỘP BÀI KHỞI TẠO</span>
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-military-900 text-slate-400 py-4 text-center text-xs border-t border-military-800">
+        <p>© 2026 - 2027 THPT Tân An, Tây Ninh. Hệ thống trắc nghiệm GDQP&AN Lớp 10.</p>
+    </footer>
+
+    <!-- Application Logic Script -->
+    <script>
+        // Full Quiz Database with 54 questions
+        const quizData = {
+            1: [
+                {
+                    id: "b1_q1",
+                    level: "Nhận biết",
+                    question: "Lực lượng vũ trang nhân dân Việt Nam gồm:",
+                    options: [
+                        "Quân đội nhân dân, Công an nhân dân, Dân quân tự vệ.",
+                        "Quân đội nhân dân, Công an nhân dân, Cảnh sát biển.",
+                        "Bộ đội chủ lực, Bộ đội địa phương, Dân quân tự vệ.",
+                        "Quân đội nhân dân, Dân quân tự vệ, lực lượng dự bị động viên."
+                    ],
+                    correct: 0
+                },
+                {
+                    id: "b1_q2",
+                    level: "Nhận biết",
+                    question: "Ngày truyền thống của Quân đội nhân dân Việt Nam là:",
+                    options: ["19/8.", "28/3.", "22/12.", "19/12."],
+                    correct: 2
+                },
+                {
+                    id: "b1_q3",
+                    level: "Nhận biết",
+                    question: "Ai trực tiếp chỉ huy Đội Việt Nam Tuyên truyền Giải phóng quân khi mới thành lập?",
+                    options: ["Trường Chinh.", "Phạm Văn Đồng.", "Võ Nguyên Giáp.", "Hoàng Văn Thụ."],
+                    correct: 2
+                },
+                {
+                    id: "b1_q4",
+                    level: "Nhận biết",
+                    question: "Từ tháng 11/1945 đến tháng 5/1946, quân đội ta mang tên:",
+                    options: ["Quân đội Quốc gia Việt Nam.", "Vệ quốc đoàn.", "Việt Nam Giải phóng quân.", "Quân đội nhân dân Việt Nam."],
+                    correct: 1
+                },
+                {
+                    id: "b1_q5",
+                    level: "Nhận biết",
+                    question: "Ngày truyền thống của Công an nhân dân Việt Nam là:",
+                    options: ["19/8.", "22/12.", "28/3.", "02/9."],
+                    correct: 0
+                },
+                {
+                    id: "b1_q6",
+                    level: "Nhận biết",
+                    question: "Ngày truyền thống của lực lượng Dân quân tự vệ là:",
+                    options: ["19/8.", "22/12.", "28/3.", "19/12."],
+                    correct: 2
+                },
+                {
+                    id: "b1_q7",
+                    level: "Nhận biết",
+                    question: "\"Nghị quyết về Đội tự vệ\" đầu tiên của Đảng được thông qua tại sự kiện nào?",
+                    options: [
+                        "Hội nghị Trung ương 8 (5/1941).",
+                        "Đại hội toàn quốc lần thứ nhất của Đảng (28/3/1935).",
+                        "Hội nghị Quân sự Bắc Kì (4/1945).",
+                        "Đại hội đại biểu toàn quốc lần thứ II (2/1951)."
+                    ],
+                    correct: 1
+                },
+                {
+                    id: "b1_q8",
+                    level: "Nhận biết",
+                    question: "Quân đội nhân dân và Công an nhân dân mang bản chất của:",
+                    options: ["Giai cấp nông dân.", "Giai cấp tư sản.", "Giai cấp công nhân.", "Tầng lớp tri thức."],
+                    correct: 2
+                },
+                {
+                    id: "b1_q9",
+                    level: "Thông hiểu",
+                    question: "Tháng 4/1945, Hội nghị Quân sự Bắc Kì quyết định:",
+                    options: [
+                        "Thành lập Đội Việt Nam Tuyên truyền Giải phóng quân.",
+                        "Hợp nhất các tổ chức vũ trang thành Việt Nam Giải phóng quân.",
+                        "Đổi tên quân đội thành Vệ quốc đoàn.",
+                        "Thông qua Nghị quyết về Đội tự vệ."
+                    ],
+                    correct: 1
+                },
+                {
+                    id: "b1_q10",
+                    level: "Thông hiểu",
+                    question: "Nghệ thuật quân sự thời kì đầu kháng chiến chống thực dân Pháp chủ yếu là:",
+                    options: [
+                        "Vận dụng lối đánh du kích, quy mô cấp tiểu đội, trung đội, đại đội.",
+                        "Tiến hành các chiến dịch phản công quy mô lớn.",
+                        "Tác chiến hiệp đồng quân, binh chủng quy mô lớn.",
+                        "Chiến tranh chính quy quy mô toàn quốc."
+                    ],
+                    correct: 0
+                },
+                {
+                    id: "b1_q11",
+                    level: "Thông hiểu",
+                    question: "Điểm phát triển mới trong nghệ thuật quân sự thời kháng chiến chống Mỹ là:",
+                    options: [
+                        "Chỉ duy trì lối đánh du kích nhỏ lẻ.",
+                        "Tác chiến hiệp đồng quân, binh chủng để tiêu diệt lớn lực lượng địch.",
+                        "Chỉ tập trung phòng thủ vững chắc tại chỗ.",
+                        "Chỉ sử dụng lực lượng vũ trang địa phương."
+                    ],
+                    correct: 1
+                },
+                {
+                    id: "b1_q12",
+                    level: "Thông hiểu",
+                    question: "Quân đội nhân dân và Công an nhân dân đặt dưới sự lãnh đạo:",
+                    options: [
+                        "Trực tiếp của Nhà nước và Chính phủ.",
+                        "Của Quốc hội và Bộ Quốc phòng.",
+                        "Tuyệt đối, trực tiếp về mọi mặt của Đảng Cộng sản Việt Nam.",
+                        "Của Quốc hội và Bộ Công an."
+                    ],
+                    correct: 2
+                },
+                {
+                    id: "b1_q13",
+                    level: "Thông hiểu",
+                    question: "Trong kháng chiến chống thực dân Pháp, Dân quân tự vệ giữ vai trò:",
+                    options: [
+                        "Nòng cốt cho toàn dân đánh giặc, thực hiện chiến tranh du kích ở địa phương.",
+                        "Chủ lực mở các chiến dịch quy mô lớn ở chiến trường chính.",
+                        "Chuyên trách bảo vệ an ninh trật tự hậu phương.",
+                        "Làm nhiệm vụ quốc tế ở Lào và Campuchia."
+                    ],
+                    correct: 0
+                },
+                {
+                    id: "b1_q14",
+                    level: "Vận dụng",
+                    question: "Việc Quân đội nhân dân phát triển từ đội vũ trang nhỏ lẻ thành đại đoàn, quân đoàn lớn phản ánh:",
+                    options: [
+                        "Quy luật chiến tranh tự phát.",
+                        "Quá trình vừa chiến đấu vừa trưởng thành, không ngừng lớn mạnh cùng cách mạng.",
+                        "Sự chi viện hoàn toàn từ các nước xã hội chủ nghĩa.",
+                        "Sự chuyển biến từ chiến tranh chính quy sang du kích."
+                    ],
+                    correct: 1
+                },
+                {
+                    id: "b1_q15",
+                    level: "Vận dụng",
+                    question: "Vận dụng truyền thống \"gắn bó máu thịt với Nhân dân\" của lực lượng vũ trang, học sinh nên:",
+                    options: [
+                        "Chỉ tập trung kết quả học tập cá nhân.",
+                        "Tích cực tham gia đền ơn đáp nghĩa, giúp đỡ nhân dân và xây dựng đoàn kết cộng đồng.",
+                        "Tham gia trực tiếp các tổ chức quân sự địa phương.",
+                        "Tuyên truyền lịch sử quân sự mà không cần hành động."
+                    ],
+                    correct: 1
+                },
+                {
+                    id: "b1_q16",
+                    level: "Vận dụng",
+                    question: "Điểm phát triển quan trọng nhất về nghệ thuật quân sự từ chống thực dân Pháp sang chống Mỹ là:",
+                    options: [
+                        "Từ lối đánh du kích quy mô nhỏ lên tác chiến hiệp đồng quân, binh chủng quy mô chiến dịch lớn.",
+                        "Từ chiến tranh chính quy sang chiến tranh du kích hoàn toàn.",
+                        "Từ phòng ngự sang duy trì chiến tranh du kích.",
+                        "Từ quy mô toàn quốc thu hẹp về địa phương."
+                    ],
+                    correct: 0
+                },
+                {
+                    id: "b1_q17",
+                    level: "Vận dụng",
+                    question: "Chức năng, nhiệm vụ cơ bản của Công an nhân dân trong giai đoạn hiện nay là:",
+                    options: [
+                        "Lực lượng nòng cốt giữ vững an ninh chính trị, trật tự an toàn xã hội.",
+                        "Lực lượng chủ lực tiêu diệt quân địch xâm lược từ bên ngoài.",
+                        "Phát triển kinh tế vùng sâu, vùng xa, biên giới.",
+                        "Huấn luyện quân sự dự bị cho toàn dân."
+                    ],
+                    correct: 0
+                },
+                {
+                    id: "b1_q18",
+                    level: "Vận dụng",
+                    question: "Kế thừa nghệ thuật đánh du kích và tinh thần sáng tạo của Dân quân tự vệ, học sinh có thể vận dụng vào việc học tập như thế nào?",
+                    options: [
+                        "Áp dụng máy móc phương pháp học cũ.",
+                        "Chủ động, mưu trí, sáng tạo trong tìm phương pháp học tập hiệu quả và vượt qua khó khăn.",
+                        "Trông chờ sự hướng dẫn chi tiết của thầy cô.",
+                        "Giảm thời gian tự học để tham gia ngoại khóa."
+                    ],
+                    correct: 1
+                }
+            ],
+            2: [
+                {
+                    id: "b2_q1",
+                    level: "Nhận biết",
+                    question: "Luật Giáo dục quốc phòng và an ninh 2013 (hợp nhất 2025) gồm mấy chương, điều?",
+                    options: ["8 chương, 46 điều.", "7 chương, 51 điều.", "7 chương, 46 điều.", "9 chương, 50 điều."],
+                    correct: 2
+                },
+                {
+                    id: "b2_q2",
+                    level: "Nhận biết",
+                    question: "Luật Sĩ quan Quân đội nhân dân 1999 (hợp nhất 2025) gồm mấy chương, điều?",
+                    options: ["8 chương, 46 điều.", "7 chương, 51 điều.", "7 chương, 46 điều.", "6 chương, 40 điều."],
+                    correct: 2
+                },
+                {
+                    id: "b2_q3",
+                    level: "Nhận biết",
+                    question: "Luật Công an nhân dân 2018 (hợp nhất 2025) gồm mấy chương, điều?",
+                    options: ["8 chương, 46 điều.", "7 chương, 51 điều.", "7 chương, 46 điều.", "6 chương, 42 điều."],
+                    correct: 1
+                },
+                {
+                    id: "b2_q4",
+                    level: "Nhận biết",
+                    question: "Sĩ quan Quân đội nhân dân và Công an nhân dân được phong quân hàm thuộc những cấp nào?",
+                    options: [
+                        "Hạ sĩ quan, cấp Úy, cấp Tá.",
+                        "Cấp Úy, cấp Tá, cấp Tướng.",
+                        "Cấp Binh sĩ, cấp Úy, cấp Tá.",
+                        "Cấp Úy, cấp Tướng, Nguyên soái."
+                    ],
+                    correct: 1
+                },
+                {
+                    id: "b2_q5",
+                    level: "Nhận biết",
+                    question: "Luật Biên giới quốc gia được ban hành vào năm nào?",
+                    options: ["Năm 2003.", "Năm 2004.", "Năm 2018.", "Năm 2019."],
+                    correct: 0
+                },
+                {
+                    id: "b2_q6",
+                    level: "Nhận biết",
+                    question: "Luật An ninh Quốc gia được ban hành vào năm nào?",
+                    options: ["Năm 2003.", "Năm 2004.", "Năm 2018.", "Năm 2025."],
+                    correct: 1
+                },
+                {
+                    id: "b2_q7",
+                    level: "Nhận biết",
+                    question: "Luật Cảnh sát biển Việt Nam được thông qua vào năm nào?",
+                    options: ["Năm 2003.", "Năm 2004.", "Năm 2018.", "Năm 2019."],
+                    correct: 2
+                },
+                {
+                    id: "b2_q8",
+                    level: "Nhận biết",
+                    question: "Luật Dân quân tự vệ được ban hành năm nào?",
+                    options: ["Năm 2003.", "Năm 2004.", "Năm 2018.", "Năm 2019."],
+                    correct: 3
+                },
+                {
+                    id: "b2_q9",
+                    level: "Thông hiểu",
+                    question: "Mục tiêu cơ bản của Giáo dục quốc phòng và an ninh là gì?",
+                    options: [
+                        "Đào tạo chuyên sâu kỹ thuật chiến đấu.",
+                        "Giáo dục kiến thức quốc phòng, an ninh để nâng cao tinh thần yêu nước và trách nhiệm bảo vệ Tổ quốc.",
+                        "Phát triển kinh tế vùng biên giới, hải đảo.",
+                        "Quản lý hành chính nhà nước về quốc phòng."
+                    ],
+                    correct: 1
+                },
+                {
+                    id: "b2_q10",
+                    level: "Thông hiểu",
+                    question: "Sĩ quan Quân đội nhân dân và Công an nhân dân là cán bộ của:",
+                    options: [
+                        "Đảng Cộng sản Việt Nam và Nhà nước Cộng hoà xã hội chủ nghĩa Việt Nam.",
+                        "Bộ Quốc phòng.",
+                        "Mặt trận Tổ quốc và các tổ chức chính trị - xã hội.",
+                        "Bộ Công an."
+                    ],
+                    correct: 0
+                },
+                {
+                    id: "b2_q11",
+                    level: "Thông hiểu",
+                    question: "Yêu cầu cốt lõi về bản lĩnh chính trị đối với sĩ quan Quân đội và Công an là gì?",
+                    options: [
+                        "Chỉ tuân thủ mệnh lệnh cấp trên trực tiếp.",
+                        "Tuyệt đối trung thành với Tổ quốc, Nhân dân, Đảng và Nhà nước.",
+                        "Đặt lợi ích cá nhân và gia đình lên hàng đầu.",
+                        "Hội nhập kinh tế quốc tế không gắn với an ninh."
+                    ],
+                    correct: 1
+                },
+                {
+                    id: "b2_q12",
+                    level: "Thông hiểu",
+                    question: "Nội dung Giáo dục quốc phòng và an ninh ở trường THPT bảo đảm cho học sinh điều gì?",
+                    options: [
+                        "Hiểu biết ban đầu về quốc phòng, an ninh, truyền thống chống ngoại xâm và sẵn sàng thực hiện nghĩa vụ.",
+                        "Trở thành sĩ quan chỉ huy ngay sau khi tốt nghiệp.",
+                        "Nắm vững chiến thuật tác chiến cấp quân đoàn.",
+                        "Được miễn hoàn toàn nghĩa vụ quân sự."
+                    ],
+                    correct: 0
+                },
+                {
+                    id: "b2_q13",
+                    level: "Thông hiểu",
+                    question: "Tiêu chuẩn cơ bản để tuyển chọn công dân đào tạo sĩ quan gồm những gì?",
+                    options: [
+                        "Chỉ cần sức khỏe tốt và nguyện vọng cá nhân.",
+                        "Chính trị, phẩm chất đạo đức, trình độ học vấn, sức khoẻ, tuổi đời, nguyện vọng và khả năng.",
+                        "Chỉ xét kết quả học tập văn hóa phổ thông.",
+                        "Không giới hạn độ tuổi nếu có tinh thần yêu nước."
+                    ],
+                    correct: 1
+                },
+                {
+                    id: "b2_q14",
+                    level: "Vận dụng",
+                    question: "Trách nhiệm đúng đắn nhất của học sinh THPT đối với môn Giáo dục quốc phòng và an ninh là gì?",
+                    options: [
+                        "Chỉ học khi có kiểm tra định kỳ.",
+                        "Tích cực học tập, nắm vững kiến thức quốc phòng, an ninh và sẵn sàng thực hiện nghĩa vụ bảo vệ Tổ quốc.",
+                        "Coi đây là môn học phụ không thiết thực.",
+                        "Chỉ tham gia ngoại khóa và bỏ qua lý thuyết."
+                    ],
+                    correct: 1
+                },
+                {
+                    id: "b2_q15",
+                    level: "Vận dụng",
+                    question: "Hạ sĩ quan hoàn thành tốt nhiệm vụ chiến đấu, có nguyện vọng cống hiến thuộc nhóm đối tượng nào?",
+                    options: [
+                        "Nguồn bổ sung sĩ quan tại ngũ trong quân đội.",
+                        "Lực lượng giải ngũ ngay lập tức.",
+                        "Đối tượng chuyển sang cơ quan hành chính dân sự.",
+                        "Lực lượng dự bị động viên hạng hai."
+                    ],
+                    correct: 0
+                },
+                {
+                    id: "b2_q16",
+                    level: "Vận dụng",
+                    question: "Học sinh, sinh viên tốt nghiệp xuất sắc được ưu tiên bổ sung vào đâu?",
+                    options: [
+                        "Công an nhân dân.",
+                        "Cảnh sát biển quốc tế.",
+                        "Tập đoàn kinh tế tư nhân.",
+                        "Doanh nghiệp quốc phòng an ninh."
+                    ],
+                    correct: 0
+                },
+                {
+                    id: "b2_q17",
+                    level: "Vận dụng",
+                    question: "Hành động hoãn cưới để chống dịch của sĩ quan Hoàng Phú Thịnh thể hiện phẩm chất gì?",
+                    options: [
+                        "Sẵn sàng hy sinh lợi ích cá nhân, đặt nhiệm vụ và lợi ích của Nhân dân lên hàng đầu.",
+                        "Mong muốn tìm kiếm danh hiệu thi đua cá nhân.",
+                        "Sự trốn tránh trách nhiệm gia đình.",
+                        "Sự tuân thủ mang tính hình thức."
+                    ],
+                    correct: 0
+                },
+                {
+                    id: "b2_q18",
+                    level: "Vận dụng",
+                    question: "Từ các luật quốc phòng, an ninh và thực tiễn, học sinh cần định hướng nhận thức như thế nào?",
+                    options: [
+                        "Xác định rõ trách nhiệm công dân, tích cực rèn luyện và sẵn sàng tham gia xây dựng, bảo vệ Tổ quốc.",
+                        "Chờ trưởng thành hẳn mới cần quan tâm.",
+                        "Chỉ tập trung phát triển kinh tế cá nhân.",
+                        "Cho rằng bảo vệ Tổ quốc không liên quan đến giới trẻ."
+                    ],
+                    correct: 0
+                }
+            ],
+            3: [
+                {
+                    id: "b3_q1",
+                    level: "Nhận biết",
+                    question: "Theo quy định pháp luật, chất ma tuý là gì?",
+                    options: [
+                        "Thảo mộc tự nhiên dùng trong y học.",
+                        "Chất gây nghiện, chất hướng thần thuộc danh mục do Chính phủ ban hành.",
+                        "Hóa chất công nghiệp kích thích thần kinh.",
+                        "Thuốc tân dược giảm đau thông thường."
+                    ],
+                    correct: 1
+                },
+                {
+                    id: "b3_q2",
+                    level: "Nhận biết",
+                    question: "Tiền chất ma tuý là gì?",
+                    options: [
+                        "Hóa chất không thể thiếu để điều chế, sản xuất ma tuý do Chính phủ ban hành.",
+                        "Chất phụ gia pha chế đồ uống có cồn.",
+                        "Nguyên liệu tự nhiên bào chế kháng sinh.",
+                        "Chất kích thích nhẹ sử dụng hàng ngày."
+                    ],
+                    correct: 0
+                },
+                {
+                    id: "b3_q3",
+                    level: "Nhận biết",
+                    question: "Luật Phòng, chống ma tuý số 120/2025/QH15 gồm mấy chương, điều?",
+                    options: ["7 chương, 46 điều.", "8 chương, 46 điều.", "7 chương, 51 điều.", "8 chương, 56 điều."],
+                    correct: 3
+                },
+                {
+                    id: "b3_q4",
+                    level: "Nhận biết",
+                    question: "Bộ luật Hình sự 2015 (hợp nhất 2025) quy định các tội phạm về ma tuý tại chương nào?",
+                    options: ["Chương XIX.", "Chương XX.", "Chương XXI.", "Chương XXII."],
+                    correct: 1
+                },
+                {
+                    id: "b3_q5",
+                    level: "Nhận biết",
+                    question: "Các hình thức ngụy trang phổ biến của ma tuý đối với giới trẻ gồm những tên gọi nào?",
+                    options: [
+                        "Rượu vang, bia hơi, thuốc lá.",
+                        "\"Tem giấy\", nấm thần, cỏ Mỹ, bóng cười,...",
+                        "Nước tăng lực, trà thảo mộc, cà phê.",
+                        "Bánh kẹo thông thường."
+                    ],
+                    correct: 1
+                },
+                {
+                    id: "b3_q6",
+                    level: "Nhận biết",
+                    question: "Luật Xử lí vi phạm hành chính 2012 quy định các biện pháp xử lí hành chính về ma tuý gồm:",
+                    options: [
+                        "Phạt cảnh cáo và phạt tiền.",
+                        "Giáo dục tại cấp xã; đưa vào trường giáo dưỡng, cơ sở giáo dục bắt buộc, cơ sở cai nghiện bắt buộc.",
+                        "Tước giấy phép lái xe và tịch thu tang vật.",
+                        "Lao động công ích ngắn hạn."
+                    ],
+                    correct: 1
+                },
+                {
+                    id: "b3_q7",
+                    level: "Nhận biết",
+                    question: "Người nghiện ma tuý là:",
+                    options: [
+                        "Người thỉnh thoảng dùng chất kích thích.",
+                        "Người sử dụng chất ma tuý, thuốc gây nghiện, thuốc hướng thần và bị lệ thuộc vào các chất này.",
+                        "Người trực tiếp sản xuất, mua bán ma tuý.",
+                        "Người có hoàn cảnh khó khăn nên vận chuyển ma tuý."
+                    ],
+                    correct: 1
+                },
+                {
+                    id: "b3_q8",
+                    level: "Nhận biết",
+                    question: "Một trong những con đường phổ biến dẫn đến nghiện ma tuý ở giới trẻ là gì?",
+                    options: [
+                        "Tham gia câu lạc bộ thể thao.",
+                        "Do tò mò muốn tìm cảm giác lạ hoặc bị bạn bè lôi kéo, xúi giục.",
+                        "Tuân thủ chỉ định điều trị của bác sĩ.",
+                        "Sử dụng thực phẩm chức năng."
+                    ],
+                    correct: 1
+                },
+                {
+                    id: "b3_q9",
+                    level: "Thông hiểu",
+                    question: "Điểm khác biệt cơ bản giữa chất gây nghiện và chất hướng thần là gì?",
+                    options: [
+                        "Chất gây nghiện chỉ kích thích; chất hướng thần chỉ ức chế.",
+                        "Chất gây nghiện dễ gây nghiện; chất hướng thần gây ảo giác, dùng nhiều lần mới dẫn đến nghiện.",
+                        "Chất gây nghiện tự nhiên; chất hướng thần nhân tạo.",
+                        "Chất gây nghiện hại thể chất; chất hướng thần hại tâm thần."
+                    ],
+                    correct: 1
+                },
+                {
+                    id: "b3_q10",
+                    level: "Thông hiểu",
+                    question: "Tác hại trực tiếp của ma tuý đối với bản thân người nghiện gồm những gì?",
+                    options: [
+                        "Chỉ tổn hại tài chính cá nhân ngắn hạn.",
+                        "Tổn hại sức khoẻ thể chất, tâm thần, huỷ hoại nhân cách, tiêu tốn tài sản và dễ vi phạm pháp luật.",
+                        "Chỉ ảnh hưởng tạm thời hệ hô hấp.",
+                        "Tăng sức lao động nhưng giảm tuổi thọ."
+                    ],
+                    correct: 1
+                },
+                {
+                    id: "b3_q11",
+                    level: "Thông hiểu",
+                    question: "Dấu hiệu sinh hoạt bất thường của người nghiện ma tuý là gì?",
+                    options: [
+                        "Chăm chỉ lao động, giữ vệ sinh sạch sẽ.",
+                        "Thường xuyên tụ tập bạn bè, đi chơi về khuya, dậy muộn, ngày ngủ nhiều, tính khí thất thường.",
+                        "Thích tham gia hoạt động tập thể, cởi mở.",
+                        "Tiêu tiết kiệm, quản lý tài chính khoa học."
+                    ],
+                    correct: 1
+                },
+                {
+                    id: "b3_q12",
+                    level: "Thông hiểu",
+                    question: "Trách nhiệm của cá nhân và gia đình trong phòng, chống ma tuý là gì?",
+                    options: [
+                        "Tự bảo vệ bản thân, không quan tâm người khác.",
+                        "Tuyên truyền, giáo dục người thân về tác hại và ngăn chặn thành viên vi phạm.",
+                        "Trực tiếp vây bắt tội phạm ma tuý tại địa bàn.",
+                        "Tự chịu trách nhiệm tài chính khi cai nghiện bắt buộc."
+                    ],
+                    correct: 1
+                },
+                {
+                    id: "b3_q13",
+                    level: "Thông hiểu",
+                    question: "Tại sao pháp luật quản lý nghiêm ngặt các tiền chất ma tuý?",
+                    options: [
+                        "Vì là hóa chất độc hại gây ô nhiễm môi trường.",
+                        "Vì là hóa chất không thể thiếu để điều chế và sản xuất chất ma tuý.",
+                        "Vì có giá trị kinh tế rất cao.",
+                        "Vì dễ gây cháy nổ."
+                    ],
+                    correct: 1
+                },
+                {
+                    id: "b3_q14",
+                    level: "Vận dụng",
+                    question: "Khi phát hiện người vi phạm pháp luật về ma tuý, học sinh cần làm gì?",
+                    options: [
+                        "Tự tiếp cận và giải quyết.",
+                        "Kịp thời tố giác với gia đình, nhà trường hoặc cơ quan chức năng.",
+                        "Giữ bí mật để tránh phiền phức.",
+                        "Đăng tải lên mạng xã hội."
+                    ],
+                    correct: 1
+                },
+                {
+                    id: "b3_q15",
+                    level: "Vận dụng",
+                    question: "Để phòng tránh ma tuý qua đường ăn uống, học sinh cần chú ý điều gì?",
+                    options: [
+                        "Chỉ dùng đồ ăn đắt tiền.",
+                        "Cảnh giác đồ ăn vặt không rõ nguồn gốc, tuyệt đối không dùng thử.",
+                        "Chỉ ăn uống tại nhà, không ăn ở trường.",
+                        "Nhờ người khác nếm thử trước."
+                    ],
+                    correct: 1
+                },
+                {
+                    id: "b3_q16",
+                    level: "Vận dụng",
+                    question: "Khi bị rủ rê sử dụng ma tuý tổng hợp mới, thái độ đúng đắn của học sinh là gì?",
+                    options: [
+                        "Dùng thử một lần để biết cảm giác.",
+                        "Kiên quyết từ chối, bảo vệ bản thân và rời khỏi khu vực đó.",
+                        "Nhận lời giữ hộ nhưng không dùng.",
+                        "Im lặng nhận quà rồi vứt đi."
+                    ],
+                    correct: 1
+                },
+                {
+                    id: "b3_q17",
+                    level: "Vận dụng",
+                    question: "Nhận thức đúng về tác hại ma tuý giúp học sinh hình thành nguyên tắc sống nào?",
+                    options: [
+                        "Sẵn sàng thử nghiệm chất kích thích mới.",
+                        "Chủ động bảo vệ bản thân, không sử dụng ma tuý dưới bất kì hình thức nào.",
+                        "Chỉ quan tâm kết quả học tập văn hóa.",
+                        "Kinh doanh nhỏ kiếm thêm thu nhập."
+                    ],
+                    correct: 1
+                },
+                {
+                    id: "b3_q18",
+                    level: "Vận dụng",
+                    question: "Hành vi sản xuất, tàng trữ, vận chuyển, mua bán trái phép ma tuý bị xử lý theo văn bản nào?",
+                    options: [
+                        "Bộ luật Hình sự 2015.",
+                        "Luật Giáo dục quốc phòng và an ninh 2013.",
+                        "Luật Sĩ quan Quân đội nhân dân 1999.",
+                        "Luật Công an nhân dân 2018."
+                    ],
+                    correct: 0
+                }
+            ]
+        };
+
+        let currentTab = 1;
+        let userAnswers = {};
+        let isSubmitted = false;
+
+        // Initialize App
+        window.onload = function() {
+            renderQuestions();
+        };
+
+        // Switch between Lessons
+        function switchTab(tabIndex) {
+            currentTab = tabIndex;
+            isSubmitted = false;
+            
+            // Update Tab UI
+            document.querySelectorAll('.tab-btn').forEach((btn, idx) => {
+                if (idx + 1 === tabIndex) {
+                    btn.className = "tab-btn px-4 py-2.5 rounded-lg font-semibold text-sm transition-all duration-200 flex items-center space-x-2 bg-military-700 text-yellow-300 border border-yellow-500 shadow-md";
+                } else {
+                    btn.className = "tab-btn px-4 py-2.5 rounded-lg font-semibold text-sm transition-all duration-200 flex items-center space-x-2 bg-white text-slate-700 hover:bg-slate-200 border border-slate-300";
+                }
+            });
+
+            // Hide Score Banner
+            document.getElementById('scoreBanner').classList.add('hidden');
+            
+            // Render questions for tab
+            renderQuestions();
+        }
+
+        // Render Question List
+        function renderQuestions() {
+            const container = document.getElementById('quiz-container');
+            const questions = quizData[currentTab];
+            container.innerHTML = '';
+
+            questions.forEach((q, qIndex) => {
+                const selectedOpt = userAnswers[q.id];
+
+                // Classification Badge Styles
+                let badgeStyle = "bg-blue-100 text-blue-800 border-blue-300";
+                if(q.level === "Thông hiểu") badgeStyle = "bg-emerald-100 text-emerald-800 border-emerald-300";
+                if(q.level === "Vận dụng") badgeStyle = "bg-amber-100 text-amber-800 border-amber-300";
+
+                let cardMarkup = `
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 md:p-6 transition hover:shadow-md" id="card-${q.id}">
+                        <div class="flex items-center justify-between gap-2 mb-3">
+                            <span class="font-bold text-military-700 text-sm md:text-base">Câu ${qIndex + 1}</span>
+                            <span class="text-xs px-2.5 py-1 rounded-full font-semibold border ${badgeStyle}">${q.level}</span>
+                        </div>
+                        <h2 class="text-slate-800 font-semibold text-base md:text-lg mb-4 leading-relaxed">${q.question}</h2>
+                        
+                        <div class="space-y-2.5">
+                `;
+
+                const optLabels = ['A', 'B', 'C', 'D'];
+                q.options.forEach((optText, optIdx) => {
+                    let optionClass = "border-slate-200 hover:border-military-600 hover:bg-emerald-50/50 text-slate-700";
+                    let radioChecked = selectedOpt === optIdx ? "checked" : "";
+                    let iconMarkup = "";
+
+                    // If Quiz Submitted -> Show Results Styling
+                    if (isSubmitted) {
+                        if (optIdx === q.correct) {
+                            // Correct Option
+                            optionClass = "bg-emerald-100 border-emerald-500 text-emerald-900 font-semibold";
+                            iconMarkup = `<i class="fa-solid fa-circle-check text-emerald-600 ml-auto text-lg"></i>`;
+                        } else if (selectedOpt === optIdx && selectedOpt !== q.correct) {
+                            // User Selected Wrong Option
+                            optionClass = "bg-rose-100 border-rose-500 text-rose-900 font-semibold";
+                            iconMarkup = `<i class="fa-solid fa-circle-xmark text-rose-600 ml-auto text-lg"></i>`;
+                        } else {
+                            optionClass = "border-slate-200 text-slate-400 opacity-70";
+                        }
+                    } else if (selectedOpt === optIdx) {
+                        optionClass = "border-military-600 bg-emerald-50 text-military-900 font-semibold ring-1 ring-military-600";
+                    }
+
+                    cardMarkup += `
+                        <label class="flex items-center p-3 md:p-3.5 rounded-lg border-2 cursor-pointer transition-all duration-150 ${optionClass}">
+                            <input type="radio" 
+                                   name="question-${q.id}" 
+                                   value="${optIdx}" 
+                                   ${radioChecked}
+                                   ${isSubmitted ? 'disabled' : ''}
+                                   onclick="selectOption('${q.id}', ${optIdx})" 
+                                   class="w-4 h-4 text-military-700 focus:ring-military-600 border-slate-300">
+                            <span class="ml-3 text-sm md:text-base flex-grow">
+                                <strong class="mr-1.5">${optLabels[optIdx]}.</strong> ${optText}
+                            </span>
+                            ${iconMarkup}
+                        </label>
+                    `;
+                });
+
+                cardMarkup += `
+                        </div>
+                    </div>
+                `;
+
+                container.innerHTML += cardMarkup;
+            });
+
+            updateProgress();
+        }
+
+        // Handle Option Selection
+        function selectOption(qId, optIdx) {
+            if (isSubmitted) return;
+            userAnswers[qId] = optIdx;
+            updateProgress();
+            
+            // Minimal UI update without full re-render
+            const qData = quizData[currentTab].find(q => q.id === qId);
+            if(qData) {
+                const card = document.getElementById(`card-${qId}`);
+                if(card) {
+                    const labels = card.querySelectorAll('label');
+                    labels.forEach((lbl, idx) => {
+                        if(idx === optIdx) {
+                            lbl.className = "flex items-center p-3 md:p-3.5 rounded-lg border-2 cursor-pointer transition-all duration-150 border-military-600 bg-emerald-50 text-military-900 font-semibold ring-1 ring-military-600";
+                        } else {
+                            lbl.className = "flex items-center p-3 md:p-3.5 rounded-lg border-2 cursor-pointer transition-all duration-150 border-slate-200 hover:border-military-600 hover:bg-emerald-50/50 text-slate-700";
+                        }
+                    });
+                }
+            }
+        }
+
+        // Update Answered Progress Counter
+        function updateProgress() {
+            const currentQuestions = quizData[currentTab];
+            let answered = 0;
+            currentQuestions.forEach(q => {
+                if (userAnswers[q.id] !== undefined) answered++;
+            });
+
+            document.getElementById('answeredCount').innerText = answered;
+            document.getElementById('lessonTotalCount').innerText = currentQuestions.length;
+        }
+
+        // Submit and Calculate Score
+        function submitQuiz() {
+            const currentQuestions = quizData[currentTab];
+            let correctCount = 0;
+
+            currentQuestions.forEach(q => {
+                if (userAnswers[q.id] === q.correct) {
+                    correctCount++;
+                }
+            });
+
+            isSubmitted = true;
+            renderQuestions();
+
+            // Calculate Score (Scale 10)
+            const score10 = ((correctCount / currentQuestions.length) * 10).toFixed(1);
+
+            // Display Score Banner
+            const scoreBanner = document.getElementById('scoreBanner');
+            const scoreCircle = document.getElementById('scoreCircle');
+            const scoreTitle = document.getElementById('scoreTitle');
+            const scoreDetail = document.getElementById('scoreDetail');
+
+            scoreBanner.classList.remove('hidden');
+            scoreCircle.innerText = `${score10}/10`;
+            scoreDetail.innerText = `Bạn đã trả lời đúng ${correctCount}/${currentQuestions.length} câu hỏi.`;
+
+            if (score10 >= 8.0) {
+                scoreTitle.innerText = "Xuất sắc! 🎉";
+                scoreTitle.className = "font-bold text-emerald-700 text-lg";
+            } else if (score10 >= 6.5) {
+                scoreTitle.innerText = "Khá tốt! 👍";
+                scoreTitle.className = "font-bold text-blue-700 text-lg";
+            } else if (score10 >= 5.0) {
+                scoreTitle.innerText = "Đạt yêu cầu! 😊";
+                scoreTitle.className = "font-bold text-amber-700 text-lg";
+            } else {
+                scoreTitle.innerText = "Cần cố gắng thêm! 💪";
+                scoreTitle.className = "font-bold text-rose-700 text-lg";
+            }
+
+            // Scroll Smoothly to Top Result
+            scoreBanner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // Reset Current Quiz Lesson
+        function resetQuiz() {
+            const currentQuestions = quizData[currentTab];
+            currentQuestions.forEach(q => {
+                delete userAnswers[q.id];
+            });
+
+            isSubmitted = false;
+            document.getElementById('scoreBanner').classList.add('hidden');
+            renderQuestions();
+        }
+    </script>
+</body>
+</html>
